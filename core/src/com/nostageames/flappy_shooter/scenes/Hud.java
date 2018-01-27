@@ -1,15 +1,18 @@
 package com.nostageames.flappy_shooter.scenes;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.nostageames.flappy_shooter.screens.PlayScreen;
 import com.nostageames.flappy_shooter.utils.Constants;
 
 /**
@@ -20,34 +23,49 @@ public class Hud implements Disposable {
     public Stage stage;
     private Viewport viewport;
 
-    private Integer distance;
+    private Float distance;
     private Integer score;
+    private Integer level;
 
     Label distanceLabel;
     Label scoreLabel;
     Label levelLabel;
 
     public Hud(SpriteBatch sb) {
-        distance = 0;
+        distance = 0f;
         score = 0;
+        level = 1;
 
-        viewport = new FitViewport(Constants.V_WIDTH, Constants.V_WIDTH, new OrthographicCamera());
+        viewport = new FitViewport(Constants.WIDTH , Constants.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sb);
 
         Table table = new Table();
         table.top();
         table.setFillParent(true);
 
-        distanceLabel = new Label(String.format("%d", distance), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        scoreLabel = new Label(String.format("%06d", score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        levelLabel = new Label("Level", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Roboto-Black.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 16;
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
 
-        table.add(distanceLabel). expandX().padTop(10);
-        table.add(scoreLabel). expandX().padTop(10);
+        distanceLabel = new Label(String.format("Distance: %6.1f", distance), new Label.LabelStyle(font, Color.WHITE));
+        scoreLabel = new Label(String.format("Score: %06d", score), new Label.LabelStyle(font, Color.WHITE));
+        levelLabel = new Label(String.format("Level: %3d", level), new Label.LabelStyle(font, Color.WHITE));
+
+        table.add(distanceLabel). expandX().padTop(15);
+        table.add(scoreLabel). expandX().padTop(15);
+        table.add(levelLabel). expandX().padTop(15);
 
         stage.addActor(table);
     }
 
+    public <T> void update(float dt, T screen) {
+        if(screen instanceof PlayScreen) {
+            distance =((PlayScreen) screen).getPlayerDistance();
+            distanceLabel.setText(String.format("Distance: %6.1f", distance));
+        }
+    }
 
     @Override
     public void dispose() {

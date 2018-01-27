@@ -1,26 +1,33 @@
 package com.nostageames.flappy_shooter.entities;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
-import com.nostageames.flappy_shooter.utils.Constants;
+import com.nostageames.flappy_shooter.interfaces.Killable;
+import com.nostageames.flappy_shooter.screens.PlayScreen;
 
 /**
  * Created by nostap on 26.01.18.
  */
 
-public abstract class Entity extends Sprite implements Disposable {
+public abstract class Entity extends Sprite implements Disposable, Killable {
 
-    Body b2body;
-    World world;
-    long startTime = System.currentTimeMillis();
+    public enum EntityType {
+        PLAYER,
+        OBSTACLE,
+        BULLET,
+        ENEMY
+    }
+
+    protected Body b2body;
+    protected World world;
+    protected PlayScreen game;
+    protected long startTime = System.currentTimeMillis();
+
+    public EntityType entityType;
     public boolean isKilled = false;
+    public boolean markToKill = false;
 
     public Body getBody() {
         return b2body;
@@ -28,12 +35,6 @@ public abstract class Entity extends Sprite implements Disposable {
 
     public World getWorld() {
         return world;
-    }
-
-    public Entity create(BodyDef bodyDef, FixtureDef fdef) {
-        b2body = world.createBody(bodyDef);
-        b2body.createFixture(fdef);
-        return this;
     }
 
     void setVelocityX(float x) {
@@ -45,8 +46,18 @@ public abstract class Entity extends Sprite implements Disposable {
     }
 
     @Override
+    public void kill() {
+        isKilled = true;
+        dispose();
+    }
+
+    @Override
     public void dispose() {
-        world.destroyBody(b2body);
+        if (!world.isLocked()) {
+            if (b2body != null) {
+                world.destroyBody(b2body);
+            }
+        }
     }
 
 }

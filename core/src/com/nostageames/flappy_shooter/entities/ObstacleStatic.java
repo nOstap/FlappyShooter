@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.nostageames.flappy_shooter.interfaces.CanKillPlayer;
 import com.nostageames.flappy_shooter.interfaces.HittableEntity;
 import com.nostageames.flappy_shooter.interfaces.Updatable;
@@ -19,7 +18,7 @@ import static com.nostageames.flappy_shooter.utils.Constants.PPM;
  * Created by nostap on 26.01.18.
  */
 
-public class Obstacle extends Entity implements Updatable, HittableEntity, CanKillPlayer {
+public class ObstacleStatic extends Obstacle implements Updatable, CanKillPlayer {
     public static final int MAX_WIDTH = 50;
     public static final int MAX_HEIGHT = 50;
     public static final int MIN_HEIGHT = 5;
@@ -28,10 +27,8 @@ public class Obstacle extends Entity implements Updatable, HittableEntity, CanKi
     int life = 50;
     int lifetime = 3000;
 
-    public Obstacle(PlayScreen game) {
-        this.game = game;
-        this.world = game.getWorld();
-        entityType = EntityType.OBSTACLE;
+    public ObstacleStatic(PlayScreen game) {
+        super(game);
     }
 
 
@@ -48,7 +45,7 @@ public class Obstacle extends Entity implements Updatable, HittableEntity, CanKi
         }
     }
 
-    public Obstacle createStatic(float width, float height, Vector2 position) {
+    public ObstacleStatic createStatic(float width, float height, Vector2 position) {
         BodyDef bdef = new BodyDef();
         bdef.position.set(position);
         bdef.type = BodyDef.BodyType.StaticBody;
@@ -67,7 +64,7 @@ public class Obstacle extends Entity implements Updatable, HittableEntity, CanKi
         return this;
     }
 
-    public Obstacle createNonGravity(float width, float height, Vector2 position) {
+    public ObstacleStatic createNonGravity(float width, float height, Vector2 position) {
         BodyDef bdef = new BodyDef();
         bdef.position.set(position);
         bdef.type = BodyDef.BodyType.DynamicBody;
@@ -87,7 +84,7 @@ public class Obstacle extends Entity implements Updatable, HittableEntity, CanKi
         return this;
     }
 
-    public Obstacle createCinematic(float width, float height, Vector2 position) {
+    public ObstacleStatic createCinematic(float width, float height, Vector2 position) {
 
         return this;
     }

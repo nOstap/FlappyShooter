@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.nostageames.flappy_shooter.interfaces.InputHandleEntity;
@@ -21,8 +23,8 @@ import static com.nostageames.flappy_shooter.utils.Constants.PPM;
 public class Player extends Entity implements InputHandleEntity, Updatable {
 
     public final static float IMPULSE_X_RATIO = 2;
-    public final static float IMPULSE_Y_RATIO = 6;
-    private final static int PLAYER_SIZE = 50;
+    public final static float IMPULSE_Y_RATIO = 4;
+    private final static int PLAYER_SIZE = 20;
 
     private final float maxVelocityX = 10;
     private final float maxVelocityY = 30;
@@ -34,23 +36,25 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
     public Player(PlayScreen game) {
         this.game = game;
         weapon = new Weapon();
+        entityType = EntityType.PLAYER;
         definePlayer();
     }
 
-    public void definePlayer() {
+    private void definePlayer() {
         BodyDef bdef = new BodyDef();
         bdef.position.set(0, Constants.HEIGHT / 2 / PPM);
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = game.getWorld().createBody(bdef);
 
         FixtureDef fdef = new FixtureDef();
-        fdef.filter.categoryBits = Constants.BULET_BIT;
-        fdef.filter.maskBits = Constants.ALL_BIT - Constants.BULET_BIT;
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(PLAYER_SIZE / 2 / PPM, PLAYER_SIZE / 2 / PPM);
+        fdef.filter.categoryBits = Constants.BULLET_BIT;
+        fdef.filter.maskBits = Constants.ALL_BIT - Constants.BULLET_BIT;
+        CircleShape shape = new CircleShape();
+        shape.setRadius(PLAYER_SIZE / PPM);
 
         fdef.shape = shape;
-        b2body.createFixture(fdef);
+        Fixture fixture = b2body.createFixture(fdef);
+        fixture.setUserData(this);
         shape.dispose();
     }
 
@@ -62,16 +66,19 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
         if (b2body.getLinearVelocity().y >= maxVelocityY * PPM) {
             setVelocityY(maxVelocityY / PPM);
         }
-        if (this.checkIfVisible()) {
-            System.out.println("NOT VISIBLE");
+        if (this.checkIfNotVisible()) {
             die();
         }
     }
 
-    private boolean checkIfVisible() {
+    public void die() {
+        isDied = true;
+    }
+
+    private boolean checkIfNotVisible() {
         return (b2body.getPosition().y * PPM > Constants.HEIGHT ||
-                b2body.getPosition().y * PPM < 0 ||
-                b2body.getPosition().x < game.getCamera().position.x);
+                b2body.getPosition().y < 0 ||
+                b2body.getPosition().x < game.getCamera().position.x - Constants.WIDTH / 2 / PPM);
     }
 
     @Override
@@ -85,11 +92,11 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
         }
     }
 
-    public void die() {
-        isDied = true;
+    private void fire() {
+        weapon.fire(game);
     }
 
-    private void fire() {
-        weapon.fire(game.getWorld(), this);
+    public boolean getIsDied() {
+        return isDied;
     }
 }

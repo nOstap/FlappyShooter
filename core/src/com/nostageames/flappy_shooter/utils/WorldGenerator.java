@@ -51,7 +51,7 @@ public class WorldGenerator implements Updatable {
                     nextRandom(bounds.left, bounds.right) / PPM,
                     nextRandom(bounds.bottom, bounds.top) / PPM
             );
-            game.getEntities().add(new Obstacle(game.getWorld()).createStatic(width, height, position));
+            game.getEntities().add(new Obstacle(game).createStatic(width, height, position));
         }
     }
 
@@ -64,7 +64,7 @@ public class WorldGenerator implements Updatable {
                     nextRandom(bounds.left, bounds.right) / PPM,
                     nextRandom(bounds.bottom, bounds.top) / PPM
             );
-            game.getEntities().add(new Obstacle(game.getWorld()).createNonGravity(width, height, position));
+            game.getEntities().add(new Obstacle(game).createNonGravity(width, height, position));
         }
     }
 

@@ -30,36 +30,10 @@ public abstract class Entity extends Sprite implements Disposable {
         return world;
     }
 
-    public <T> T create(float width, float height, Vector2 position, BodyDef.BodyType bodyType) {
-        BodyDef bdef = new BodyDef();
-        bdef.position.set(position);
-        bdef.type = bodyType;
-        b2body = world.createBody(bdef);
-
-        FixtureDef fdef = new FixtureDef();
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2 / Constants.PPM, height / 2 / Constants.PPM);
-
-        fdef.shape = shape;
+    public Entity create(BodyDef bodyDef, FixtureDef fdef) {
+        b2body = world.createBody(bodyDef);
         b2body.createFixture(fdef);
-        shape.dispose();
-        return (T) this;
-    }
-
-    public <T> T create(float radius, Vector2 position, BodyDef.BodyType bodyType) {
-        BodyDef bdef = new BodyDef();
-        bdef.position.set(position);
-        bdef.type = bodyType;
-        b2body = world.createBody(bdef);
-
-        FixtureDef fdef = new FixtureDef();
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius / Constants.PPM);
-
-        fdef.shape = shape;
-        b2body.createFixture(fdef);
-        shape.dispose();
-        return (T) this;
+        return this;
     }
 
     void setVelocityX(float x) {

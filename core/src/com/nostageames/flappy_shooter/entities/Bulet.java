@@ -28,7 +28,6 @@ public class Bulet extends Entity {
         bdef.position.set(position);
         bdef.type = BodyType.DynamicBody;
         bdef.bullet = true;
-        b2body = world.createBody(bdef);
 
         FixtureDef fdef = new FixtureDef();
         fdef.filter.categoryBits = Constants.BULET_BIT;
@@ -36,7 +35,7 @@ public class Bulet extends Entity {
         shape.setRadius(radius / Constants.PPM);
 
         fdef.shape = shape;
-        b2body.createFixture(fdef);
+        create(bdef, fdef);
         shape.dispose();
         return this;
     }

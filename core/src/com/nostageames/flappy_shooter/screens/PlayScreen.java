@@ -8,14 +8,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.nostageames.flappy_shooter.FlappyShooter;
 import com.nostageames.flappy_shooter.entities.Entity;
 import com.nostageames.flappy_shooter.interfaces.InputHandleEntity;
 import com.nostageames.flappy_shooter.entities.Player;
-import com.nostageames.flappy_shooter.interfaces.UpdatableEntity;
+import com.nostageames.flappy_shooter.interfaces.Updatable;
 import com.nostageames.flappy_shooter.scenes.Hud;
 import com.nostageames.flappy_shooter.utils.Constants;
 import com.nostageames.flappy_shooter.utils.WorldGenerator;
@@ -49,12 +48,12 @@ public class PlayScreen implements Screen {
         hud = new Hud(game.batch);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        world = new World(new Vector2(0, -10.0f), true);
+        world = new World(new Vector2(0, -Constants.GRAVITY), true);
         b2dr = new Box2DDebugRenderer();
 
         entities = new Array<Entity>();
         player = new Player(this);
-        worldGenerator = new WorldGenerator(world, entities);
+        worldGenerator = new WorldGenerator(this);
         entities.add(player);
     }
 
@@ -75,6 +74,10 @@ public class PlayScreen implements Screen {
 
     public float getPlayerDistance() {
         return this.player.getBody().getPosition().x;
+    }
+
+    public Array<Entity> getEntities() {
+        return entities;
     }
 
     public Hud getHud() {
@@ -135,7 +138,7 @@ public class PlayScreen implements Screen {
 
         hud.update(dt, this);
 
-        worldGenerator.update(dt, getPlayerDistance());
+        worldGenerator.update(dt);
 
         updateEntities(dt);
 //        disposeKilledEntities();
@@ -146,7 +149,7 @@ public class PlayScreen implements Screen {
 
     private void disposeKilledEntities() {
         Iterator<Entity> entityIterator = entities.iterator();
-        while(entityIterator.hasNext()) {
+        while (entityIterator.hasNext()) {
             if (entityIterator.next().isKilled) {
                 entityIterator.next().dispose();
                 entityIterator.remove();
@@ -162,8 +165,8 @@ public class PlayScreen implements Screen {
 
     private void updateEntities(float dt) {
         for (Entity entity : entities) {
-            if (entity instanceof UpdatableEntity) {
-                ((UpdatableEntity) entity).update(dt);
+            if (entity instanceof Updatable) {
+                ((Updatable) entity).update(dt);
             }
         }
     }

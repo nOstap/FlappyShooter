@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.nostageames.flappy_shooter.interfaces.InputHandleEntity;
-import com.nostageames.flappy_shooter.interfaces.UpdatableEntity;
+import com.nostageames.flappy_shooter.interfaces.Updatable;
 import com.nostageames.flappy_shooter.screens.PlayScreen;
 import com.nostageames.flappy_shooter.utils.Constants;
 import com.nostageames.flappy_shooter.weapons.Weapon;
@@ -16,7 +16,7 @@ import com.nostageames.flappy_shooter.weapons.Weapon;
  * Created by nostap on 20.01.18.
  */
 
-public class Player extends Entity implements InputHandleEntity, UpdatableEntity {
+public class Player extends Entity implements InputHandleEntity, Updatable {
     private final int playerSize = 50;
     private final float maxVelocityX = 10;
     private final float maxVelocityY = 30;

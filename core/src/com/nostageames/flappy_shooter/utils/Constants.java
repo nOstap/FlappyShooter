@@ -4,6 +4,7 @@ public final class Constants {
     public static final float PPM = 100;
     public static final int WIDTH = 800;
     public static final int HEIGHT = 450;
+    public static final float GRAVITY = 9.807f;
 
     public static final short NOTHING_BIT = 0;
     public static final short DIE_BIT = 1;
@@ -12,5 +13,6 @@ public final class Constants {
     public static final short POINT_BIT = 8;
     public static final short ITEM_BIT = 16;
     public static final short BULET_BIT = 32;
+    public static final short OBSTACLE_BIT = 64;
     public static final short ALL_BIT = 0xfff;
 }

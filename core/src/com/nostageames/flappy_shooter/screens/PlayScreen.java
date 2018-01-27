@@ -21,6 +21,8 @@ import com.nostageames.flappy_shooter.utils.WorldGenerator;
 
 import java.util.Iterator;
 
+import static com.nostageames.flappy_shooter.utils.Constants.PPM;
+
 /**
  * Created by nostap on 20.01.18.
  */
@@ -29,7 +31,7 @@ public class PlayScreen implements Screen {
 
     private FlappyShooter game;
     private Viewport gamePort;
-    private OrthographicCamera gamecam;
+    private OrthographicCamera camera;
     private Player player;
     private Hud hud;
     private Box2DDebugRenderer b2dr;
@@ -37,16 +39,19 @@ public class PlayScreen implements Screen {
     private WorldGenerator worldGenerator;
     private Array<Entity> entities;
 
+    private int cameraSpeed = 100;
+    private float cameraSpeedRatio = 0.1f;
+    private float cameraMaxSpeed = Player.IMPULSE_X_RATIO;
 
     public PlayScreen(FlappyShooter game) {
         this.game = game;
-        gamecam = new OrthographicCamera();
+        camera = new OrthographicCamera();
         gamePort = new FitViewport(
-                Constants.WIDTH / Constants.PPM,
-                Constants.HEIGHT / Constants.PPM,
-                gamecam);
+                Constants.WIDTH / PPM,
+                Constants.HEIGHT / PPM,
+                camera);
         hud = new Hud(game.batch);
-        gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
+        camera.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
         world = new World(new Vector2(0, -Constants.GRAVITY), true);
         b2dr = new Box2DDebugRenderer();
@@ -63,7 +68,7 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        b2dr.render(world, gamecam.combined);
+        b2dr.render(world, camera.combined);
         game.batch.begin();
 
 
@@ -143,8 +148,15 @@ public class PlayScreen implements Screen {
         updateEntities(dt);
 //        disposeKilledEntities();
 
-        gamecam.position.x = setCameraCenter();
-        gamecam.update();
+        updateCamera(dt);
+    }
+
+    private void updateCamera(float dt) {
+        final float currentDistance = getPlayerDistance();
+        camera.position.x += cameraSpeed / PPM * dt;
+        cameraSpeed += currentDistance * cameraSpeedRatio * dt;
+        if (currentDistance > camera.position.x) camera.position.x = currentDistance;
+        camera.update();
     }
 
     private void disposeKilledEntities() {
@@ -171,8 +183,7 @@ public class PlayScreen implements Screen {
         }
     }
 
-    private float setCameraCenter() {
-        return (player.getBody().getPosition().x + gamePort.getWorldWidth() / 2) - 2;
+    public OrthographicCamera getCamera() {
+        return camera;
     }
-
 }

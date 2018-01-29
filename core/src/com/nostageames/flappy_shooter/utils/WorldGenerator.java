@@ -1,7 +1,9 @@
 package com.nostageames.flappy_shooter.utils;
 
 import com.badlogic.gdx.math.Vector2;
+import com.nostageames.flappy_shooter.entities.NoGravityObstacle;
 import com.nostageames.flappy_shooter.entities.Obstacle;
+import com.nostageames.flappy_shooter.entities.StaticObstacle;
 import com.nostageames.flappy_shooter.interfaces.Updatable;
 import com.nostageames.flappy_shooter.screens.PlayScreen;
 
@@ -43,7 +45,7 @@ public class WorldGenerator implements Updatable {
     }
 
     private void generateStaticObstacles(Bounds bounds) {
-        int count = (int) (5 + game.getPlayerDistance()* distanceRatio * staticObstaclesRatio);
+        int count = (int) (5 + game.getDistance()* distanceRatio * staticObstaclesRatio);
         for (int i = 0; i < count; i++) {
             float width = nextRandom(Obstacle.MIN_WIDTH, Obstacle.MAX_WIDTH);
             float height = nextRandom(Obstacle.MIN_HEIGHT, Obstacle.MAX_HEIGHT);
@@ -51,12 +53,12 @@ public class WorldGenerator implements Updatable {
                     nextRandom(bounds.left, bounds.right) / PPM,
                     nextRandom(bounds.bottom, bounds.top) / PPM
             );
-            game.getEntities().add(new Obstacle(game).createStatic(width, height, position));
+            game.getEntities().add(new StaticObstacle(game).create(width, height, position));
         }
     }
 
     private void generateNonGravityObjects(Bounds bounds) {
-        int count = (int) (10 + game.getPlayerDistance()* distanceRatio * nonGravityObstaclesRatio);
+        int count = (int) (10 + game.getDistance()* distanceRatio * nonGravityObstaclesRatio);
         for (int i = 0; i < count; i++) {
             float width = nextRandom(Obstacle.MIN_WIDTH, Obstacle.MAX_WIDTH);
             float height = nextRandom(Obstacle.MIN_HEIGHT, Obstacle.MAX_HEIGHT);
@@ -64,13 +66,13 @@ public class WorldGenerator implements Updatable {
                     nextRandom(bounds.left, bounds.right) / PPM,
                     nextRandom(bounds.bottom, bounds.top) / PPM
             );
-            game.getEntities().add(new Obstacle(game).createNonGravity(width, height, position));
+            game.getEntities().add(new NoGravityObstacle(game).create(width, height, position));
         }
     }
 
     @Override
     public void update(float dt) {
-        float currentDistance = game.getPlayerDistance();
+        float currentDistance = game.getDistance();
         currentDistance *= PPM;
         if (currentDistance + Constants.WIDTH > currentGeneratorPosition) {
             nextPart();

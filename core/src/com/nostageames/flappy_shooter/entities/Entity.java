@@ -2,16 +2,14 @@ package com.nostageames.flappy_shooter.entities;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
-import com.nostageames.flappy_shooter.interfaces.Killable;
 import com.nostageames.flappy_shooter.screens.PlayScreen;
 
 /**
  * Created by nostap on 26.01.18.
  */
 
-public abstract class Entity extends Sprite implements Disposable, Killable {
+public abstract class Entity extends Sprite implements Disposable {
 
     public enum EntityType {
         PLAYER,
@@ -21,7 +19,6 @@ public abstract class Entity extends Sprite implements Disposable, Killable {
     }
 
     protected Body b2body;
-    protected World world;
     protected PlayScreen game;
     protected long startTime = System.currentTimeMillis();
 
@@ -33,10 +30,6 @@ public abstract class Entity extends Sprite implements Disposable, Killable {
         return b2body;
     }
 
-    public World getWorld() {
-        return world;
-    }
-
     void setVelocityX(float x) {
         b2body.setLinearVelocity(x, b2body.getLinearVelocity().y);
     }
@@ -46,18 +39,17 @@ public abstract class Entity extends Sprite implements Disposable, Killable {
     }
 
     @Override
-    public void kill() {
-        isKilled = true;
-        dispose();
-    }
-
-    @Override
     public void dispose() {
-        if (!world.isLocked()) {
+        isKilled = true;
+        if (!game.getWorld().isLocked()) {
             if (b2body != null) {
-                world.destroyBody(b2body);
+                game.getWorld().destroyBody(b2body);
             }
         }
+    }
+
+    public void kill() {
+        markToKill = true;
     }
 
 }

@@ -62,8 +62,10 @@ public class Hud implements Disposable {
 
     public <T> void update(float dt, T screen) {
         if(screen instanceof PlayScreen) {
-            distance =((PlayScreen) screen).getPlayerDistance();
+            distance =((PlayScreen) screen).getDistance();
+            score = ((PlayScreen) screen).getScore();
             distanceLabel.setText(String.format("Distance: %6.1f", distance));
+            scoreLabel.setText(String.format("Score: %06d", score));
         }
     }
 

@@ -6,10 +6,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.nostageames.flappy_shooter.interfaces.CanDealDamage;
-import com.nostageames.flappy_shooter.interfaces.HittableEntity;
+import com.nostageames.flappy_shooter.interfaces.CanBeHurted;
 import com.nostageames.flappy_shooter.interfaces.Updatable;
+import com.nostageames.flappy_shooter.screens.PlayScreen;
 import com.nostageames.flappy_shooter.utils.Constants;
 
 /**
@@ -17,13 +17,13 @@ import com.nostageames.flappy_shooter.utils.Constants;
  */
 
 public class Bullet extends Entity implements Updatable, CanDealDamage {
-    public int damage = 1;
-    public int speed = 20;
-    public int radius = 2;
-    public float lifetime = 1000;
+    private int damage = 10;
+    private int speed = 4;
+    private int radius = 3;
+    private float lifetime = 3000;
 
-    public Bullet(World world) {
-        this.world = world;
+    public Bullet(PlayScreen game) {
+        this.game = game;
         entityType = EntityType.BULLET;
     }
 
@@ -32,7 +32,7 @@ public class Bullet extends Entity implements Updatable, CanDealDamage {
         bdef.position.set(position);
         bdef.type = BodyType.DynamicBody;
         bdef.bullet = true;
-        b2body = world.createBody(bdef);
+        b2body = game.getWorld().createBody(bdef);
 
 
         FixtureDef fdef = new FixtureDef();
@@ -40,8 +40,8 @@ public class Bullet extends Entity implements Updatable, CanDealDamage {
         fdef.filter.categoryBits = Constants.BULLET_BIT;
         CircleShape shape = new CircleShape();
         shape.setRadius(radius / Constants.PPM);
-
         fdef.shape = shape;
+        fdef.density = 100;
         Fixture fixture = b2body.createFixture(fdef);
         fixture.setUserData(this);
         shape.dispose();
@@ -53,18 +53,21 @@ public class Bullet extends Entity implements Updatable, CanDealDamage {
     }
 
     @Override
-    public void dispose() {
-        world.destroyBody(b2body);
-    }
-
-    @Override
-    public void dealDamage(HittableEntity entity) {
+    public void dealDamage(CanBeHurted entity) {
         entity.decreaseLife(damage);
+        if (entity.getLife() == 0) {
+            game.updateScore(entity.getKillScore());
+            entity.kill();
+        } else {
+            game.updateScore(entity.getHitScore());
+        }
+        kill();
     }
 
     @Override
     public void update(float dt) {
-        if (System.currentTimeMillis() - startTime > lifetime) kill();
-        if (markToKill) kill();
+        if (System.currentTimeMillis() - startTime > lifetime) dispose();
+        if (markToKill) dispose();
     }
+
 }

@@ -1,9 +1,6 @@
 package com.nostageames.flappy_shooter.weapons;
 
-import com.badlogic.gdx.physics.box2d.World;
 import com.nostageames.flappy_shooter.entities.Bullet;
-import com.nostageames.flappy_shooter.interfaces.HittableEntity;
-import com.nostageames.flappy_shooter.entities.Player;
 import com.nostageames.flappy_shooter.screens.PlayScreen;
 
 /**
@@ -11,14 +8,18 @@ import com.nostageames.flappy_shooter.screens.PlayScreen;
  */
 
 public class Weapon {
-    public int ammo = -1;
-    public int damage = 10;
+    private int ammo = -1;
+    private long startTime = 0;
+    private int speed = 100;
 
     public Weapon() {
     }
 
     public void fire(PlayScreen game) {
-        Bullet bullet = new Bullet(game.getWorld()).create(game.getPlayer().getBody().getPosition());
+        if (System.currentTimeMillis() - speed < startTime) return;
+        startTime = System.currentTimeMillis();
+        Bullet bullet = new Bullet(game).create(game.getPlayer().getBody().getPosition());
+        decreaseAmmo();
         game.getEntities().add(bullet);
         bullet.release();
     }

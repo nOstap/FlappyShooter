@@ -5,5 +5,5 @@ package com.nostageames.flappy_shooter.interfaces;
  */
 
 public interface CanDealDamage {
-    public void dealDamage(HittableEntity entity);
+    void dealDamage(CanBeHurted entity);
 }

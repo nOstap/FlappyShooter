@@ -22,8 +22,8 @@ import static com.nostageames.flappy_shooter.utils.Constants.PPM;
 
 public class Player extends Entity implements InputHandleEntity, Updatable {
 
-    public final static float IMPULSE_X_RATIO = 2;
-    public final static float IMPULSE_Y_RATIO = 4;
+    public final static float IMPULSE_X_RATIO = 7;
+    public final static float IMPULSE_Y_RATIO = 15;
     private final static int PLAYER_SIZE = 20;
 
     private final float maxVelocityX = 10;
@@ -32,6 +32,7 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
     private int points = 0;
     private Weapon weapon;
     private PlayScreen game;
+    private boolean isFiring = false;
 
     public Player(PlayScreen game) {
         this.game = game;
@@ -53,6 +54,7 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
         shape.setRadius(PLAYER_SIZE / PPM);
 
         fdef.shape = shape;
+        fdef.density = 30;
         Fixture fixture = b2body.createFixture(fdef);
         fixture.setUserData(this);
         shape.dispose();
@@ -68,6 +70,9 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
         }
         if (this.checkIfNotVisible()) {
             die();
+        }
+        if (this.isFiring) {
+            fire();
         }
     }
 
@@ -88,7 +93,7 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
             b2body.applyLinearImpulse(new Vector2(IMPULSE_X_RATIO, IMPULSE_Y_RATIO), b2body.getWorldCenter(), true);
         }
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            fire();
+            isFiring = true;
         }
     }
 

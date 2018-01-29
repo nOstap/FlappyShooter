@@ -41,9 +41,10 @@ public class PlayScreen implements Screen {
     private WorldGenerator worldGenerator;
     private Array<Entity> entities;
 
+    private float score = 0.0f;
     private int cameraSpeed = 100;
-    private float cameraSpeedRatio = 0.1f;
-    private float cameraMaxSpeed = Player.IMPULSE_X_RATIO;
+    private final float cameraSpeedRatio = 0.1f;
+    private final float cameraMaxSpeed = Player.IMPULSE_X_RATIO;
     private boolean isPlaying = false;
 
     public PlayScreen(FlappyShooter game) {
@@ -81,7 +82,6 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
     }
-
 
     @Override
     public void dispose() {
@@ -121,10 +121,10 @@ public class PlayScreen implements Screen {
 
 
     private void updateCamera(float dt) {
-        final float currentDistance = getPlayerDistance();
+        final float currentDistance = getDistance();
         camera.position.x += cameraSpeed / PPM * dt;
         cameraSpeed += currentDistance * cameraSpeedRatio * dt;
-        if (currentDistance > camera.position.x) camera.position.x = currentDistance;
+//        if (currentDistance > camera.position.x) camera.position.x = currentDistance;
         camera.update();
     }
 
@@ -150,7 +150,7 @@ public class PlayScreen implements Screen {
         return camera;
     }
 
-    public float getPlayerDistance() {
+    public float getDistance() {
         return this.player.getBody().getPosition().x;
     }
 
@@ -165,6 +165,19 @@ public class PlayScreen implements Screen {
     public World getWorld() {
         return world;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public int getScore() {
+        return (int) score;
+    }
+
+    public void setScore(float score) {
+        this.score = score;
+    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -192,7 +205,7 @@ public class PlayScreen implements Screen {
 
     }
 
-    public Player getPlayer() {
-        return player;
+    public void updateScore(float value) {
+        score += value;
     }
 }

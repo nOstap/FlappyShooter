@@ -5,6 +5,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.nostageames.flappy_shooter.interfaces.CanBeHurted;
+import com.nostageames.flappy_shooter.interfaces.CanBeKilled;
+import com.nostageames.flappy_shooter.interfaces.CanKillPlayer;
 import com.nostageames.flappy_shooter.interfaces.Updatable;
 import com.nostageames.flappy_shooter.screens.PlayScreen;
 import com.nostageames.flappy_shooter.utils.Constants;
@@ -16,38 +19,25 @@ import static com.nostageames.flappy_shooter.utils.Constants.PPM;
  * Created by nostap on 26.01.18.
  */
 
-public abstract class Obstacle extends Entity implements Updatable {
+public class NoGravityObstacle extends Obstacle implements CanBeHurted {
     public static final int MAX_WIDTH = 50;
     public static final int MAX_HEIGHT = 50;
     public static final int MIN_HEIGHT = 5;
     public static final int MIN_WIDTH = 5;
 
-    protected int life = 100;
-    protected int killScore = 100;
-    protected int hitScore = 0;
+    int life = 50;
+    int killScore = 10;
+    int hitScore = 0;
 
-    public Obstacle(PlayScreen game) {
-        this.game = game;
-        entityType = EntityType.OBSTACLE;
+    public NoGravityObstacle(PlayScreen game) {
+        super(game);
     }
 
-    @Override
-    public void update(float dt) {
-        if (markToKill) dispose();
-        if (game.getCamera().position.x - (Constants.WIDTH / PPM) > b2body.getPosition().x) dispose();
-        if (b2body.getType() == BodyDef.BodyType.DynamicBody) {
-            b2body.applyForce(
-                    new Vector2(0, b2body.getMass() * Constants.GRAVITY),
-                    b2body.getWorldCenter(),
-                    true
-            );
-        }
-    }
 
-    public Obstacle create(float width, float height, Vector2 position) {
+    public NoGravityObstacle create(float width, float height, Vector2 position) {
         BodyDef bdef = new BodyDef();
         bdef.position.set(position);
-        bdef.type = BodyDef.BodyType.StaticBody;
+        bdef.type = BodyDef.BodyType.DynamicBody;
         bdef.angle = Helpers.nextRandom(0.0f, (float) Math.PI);
         b2body = game.getWorld().createBody(bdef);
 
@@ -57,29 +47,11 @@ public abstract class Obstacle extends Entity implements Updatable {
         shape.setAsBox(width / PPM, height / PPM);
 
         fdef.shape = shape;
+        fdef.density = 50;
+        fdef.friction = .5f;
         Fixture fixture = b2body.createFixture(fdef);
         fixture.setUserData(this);
         shape.dispose();
         return this;
-    }
-
-    public int getKillScore() {
-        return killScore;
-    }
-
-    public void decreaseLife(int damage) {
-        if ((life - damage) > 0) {
-            life -= damage;
-        } else {
-            life = 0;
-        }
-    }
-
-    public int getHitScore() {
-        return hitScore;
-    }
-
-    public int getLife() {
-        return life;
     }
 }

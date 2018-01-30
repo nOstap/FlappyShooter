@@ -2,17 +2,20 @@ package com.nostageames.flappy_shooter.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.nostageames.flappy_shooter.interfaces.InputHandleEntity;
 import com.nostageames.flappy_shooter.interfaces.Updatable;
 import com.nostageames.flappy_shooter.screens.PlayScreen;
 import com.nostageames.flappy_shooter.utils.Constants;
 import com.nostageames.flappy_shooter.weapons.Weapon;
+
+import box2dLight.ConeLight;
+import box2dLight.PointLight;
 
 import static com.nostageames.flappy_shooter.utils.Constants.PPM;
 
@@ -46,6 +49,7 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
         bdef.position.set(0, Constants.HEIGHT / 2 / PPM);
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = game.getWorld().createBody(bdef);
+        bdef.fixedRotation = true;
 
         FixtureDef fdef = new FixtureDef();
         fdef.filter.categoryBits = Constants.BULLET_BIT;
@@ -92,9 +96,7 @@ public class Player extends Entity implements InputHandleEntity, Updatable {
             b2body.setLinearVelocity(0, 0);
             b2body.applyLinearImpulse(new Vector2(IMPULSE_X_RATIO, IMPULSE_Y_RATIO), b2body.getWorldCenter(), true);
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            isFiring = true;
-        }
+        isFiring = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
     }
 
     private void fire() {

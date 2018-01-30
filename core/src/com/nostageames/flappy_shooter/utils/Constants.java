@@ -5,6 +5,7 @@ public final class Constants {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 450;
     public static final float GRAVITY = 9.807f;
+    public static final int RAYS_NUM = 500;
 
     public static final short NOTHING_BIT = 0;
     public static final short DIE_BIT = 1;

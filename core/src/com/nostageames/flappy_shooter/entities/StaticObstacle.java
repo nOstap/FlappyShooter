@@ -18,17 +18,17 @@ import static com.nostageames.flappy_shooter.utils.Constants.PPM;
  * Created by nostap on 26.01.18.
  */
 
-public class StaticObstacle extends Obstacle implements CanKillPlayer {
+public class StaticObstacle extends Obstacle implements CanKillPlayer, CanBeKilled {
     public static final int MAX_WIDTH = 50;
     public static final int MAX_HEIGHT = 50;
     public static final int MIN_HEIGHT = 5;
     public static final int MIN_WIDTH = 5;
 
-    int life = 100;
-    int killScore = 100;
-    int hitScore = 0;
 
     public StaticObstacle(PlayScreen game) {
         super(game);
+        life = 500;
+        hitScore = 0;
+        killScore = 1000;
     }
 }

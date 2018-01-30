@@ -59,6 +59,7 @@ public class Bullet extends Entity implements Updatable, CanDealDamage {
             game.updateScore(entity.getKillScore());
             entity.kill();
         } else {
+            System.out.println(entity.getHitScore());
             game.updateScore(entity.getHitScore());
         }
         kill();

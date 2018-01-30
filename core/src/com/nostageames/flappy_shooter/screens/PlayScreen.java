@@ -2,6 +2,7 @@ package com.nostageames.flappy_shooter.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -18,9 +19,13 @@ import com.nostageames.flappy_shooter.entities.Player;
 import com.nostageames.flappy_shooter.interfaces.Updatable;
 import com.nostageames.flappy_shooter.scenes.Hud;
 import com.nostageames.flappy_shooter.utils.Constants;
+import com.nostageames.flappy_shooter.utils.PolygonRenderer;
 import com.nostageames.flappy_shooter.utils.WorldGenerator;
 
 import java.util.Iterator;
+
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 
 import static com.badlogic.gdx.Input.Keys.SPACE;
 import static com.nostageames.flappy_shooter.utils.Constants.PPM;
@@ -42,10 +47,12 @@ public class PlayScreen implements Screen {
     private Array<Entity> entities;
 
     private float score = 0.0f;
-    private int cameraSpeed = 100;
+    private int cameraSpeed = 150;
     private final float cameraSpeedRatio = 0.1f;
     private final float cameraMaxSpeed = Player.IMPULSE_X_RATIO;
     private boolean isPlaying = false;
+    public RayHandler rayHandler;
+    private Array<PointLight> lights;
 
     public PlayScreen(FlappyShooter game) {
         this.game = game;
@@ -59,9 +66,13 @@ public class PlayScreen implements Screen {
 
         world = new World(new Vector2(0, -Constants.GRAVITY), true);
         world.setContactListener(new CollisionHandler());
-        b2dr = new Box2DDebugRenderer();
+        rayHandler = new RayHandler(world);
+        rayHandler.setBlur(false);
+        rayHandler.setAmbientLight(new Color(0x090315ff));
+        b2dr = new PolygonRenderer();
 
         entities = new Array<Entity>();
+        lights = new Array<PointLight>();
         player = new Player(this);
         worldGenerator = new WorldGenerator(this);
         entities.add(player);
@@ -81,13 +92,9 @@ public class PlayScreen implements Screen {
         game.batch.end();
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
-    }
 
-    @Override
-    public void dispose() {
-        world.dispose();
-        b2dr.dispose();
-        hud.dispose();
+        rayHandler.setCombinedMatrix(camera);
+        rayHandler.updateAndRender();
     }
 
     private void handleInput(float dt) {
@@ -103,32 +110,32 @@ public class PlayScreen implements Screen {
 
     private void update(float dt) {
         handleInput(dt);
-
         if (!isPlaying) return;
-
         world.step(1 / 60f, 6, 2);
         hud.update(dt, this);
         worldGenerator.update(dt);
         updateEntities(dt);
+        updateLights(dt);
         updateCamera(dt);
-
-        disposeKilledEntities();
 
         if (player.getIsDied()) {
             game.create();
         }
     }
 
-
     private void updateCamera(float dt) {
         final float currentDistance = getDistance();
         camera.position.x += cameraSpeed / PPM * dt;
         cameraSpeed += currentDistance * cameraSpeedRatio * dt;
-//        if (currentDistance > camera.position.x) camera.position.x = currentDistance;
         camera.update();
     }
 
-    private void disposeKilledEntities() {
+    private void updateEntities(float dt) {
+        for (Entity entity : entities) {
+            if (entity instanceof Updatable) {
+                ((Updatable) entity).update(dt);
+            }
+        }
         Iterator<Entity> i = entities.iterator();
         while (i.hasNext()) {
             Entity b = i.next();
@@ -138,12 +145,14 @@ public class PlayScreen implements Screen {
         }
     }
 
-    private void updateEntities(float dt) {
-        for (Entity entity : entities) {
-            if (entity instanceof Updatable) {
-                ((Updatable) entity).update(dt);
-            }
-        }
+    private void updateLights(float dt) {
+//        for (PointLight light: lights) {
+//            if(light.getPosition().x < getDistance()-gamePort.getWorldWidth()) {
+//                System.out.println(gamePort.getWorldWidth());
+//                light.dispose();
+//                light.remove();
+//            }
+//        }
     }
 
     public OrthographicCamera getCamera() {
@@ -207,5 +216,17 @@ public class PlayScreen implements Screen {
 
     public void updateScore(float value) {
         score += value;
+    }
+
+    @Override
+    public void dispose() {
+        world.dispose();
+        b2dr.dispose();
+        hud.dispose();
+        rayHandler.dispose();
+    }
+
+    public Array<PointLight> getLights() {
+        return lights;
     }
 }

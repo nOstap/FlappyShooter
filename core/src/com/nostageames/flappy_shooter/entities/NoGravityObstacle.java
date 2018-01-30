@@ -20,17 +20,16 @@ import static com.nostageames.flappy_shooter.utils.Constants.PPM;
  */
 
 public class NoGravityObstacle extends Obstacle implements CanBeHurted {
-    public static final int MAX_WIDTH = 50;
-    public static final int MAX_HEIGHT = 50;
+    public static final int MAX_WIDTH = 40;
+    public static final int MAX_HEIGHT = 40;
     public static final int MIN_HEIGHT = 5;
     public static final int MIN_WIDTH = 5;
 
-    int life = 50;
-    int killScore = 10;
-    int hitScore = 0;
-
     public NoGravityObstacle(PlayScreen game) {
         super(game);
+        life = 50;
+        hitScore = 5;
+        killScore = 200;
     }
 
 

@@ -45,13 +45,19 @@ public class Hud implements Disposable {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Roboto-Black.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 16;
+        parameter.size = 24;
         BitmapFont font = generator.generateFont(parameter);
         generator.dispose();
 
-        distanceLabel = new Label(String.format("Distance: %6.1f", distance), new Label.LabelStyle(font, Color.WHITE));
-        scoreLabel = new Label(String.format("Score: %06d", score), new Label.LabelStyle(font, Color.WHITE));
-        levelLabel = new Label(String.format("Level: %3d", level), new Label.LabelStyle(font, Color.WHITE));
+        distanceLabel = new Label(
+                String.format("Distance: %6.1f", distance),
+                new Label.LabelStyle(font, new Color(0xffffffA0)));
+        scoreLabel = new Label(
+                String.format("Score: %06d", score),
+                new Label.LabelStyle(font, new Color(0xffffffA0)));
+        levelLabel = new Label(
+                String.format("Level: %3d", level),
+                new Label.LabelStyle(font, new Color(0xffffffA0)));
 
         table.add(distanceLabel). expandX().padTop(15);
         table.add(scoreLabel). expandX().padTop(15);
